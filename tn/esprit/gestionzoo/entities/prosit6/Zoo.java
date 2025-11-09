@@ -1,11 +1,14 @@
 package first.tn.esprit.gestionzoo.entities.prosit6;
 
+import first.tn.esprit.gestionzoo.exceptions.InvalidAgeException;
+import first.tn.esprit.gestionzoo.exceptions.ZooFullException;
+
 public class Zoo {
     private Animal[] animals;
     private Aquatic[] aquaticAnimals;
     private String name;
     private String city;
-    private final int NBR_CAGES = 25; 
+    private int nbrCages;
     private final int NBR_AQUATIC_CAGES = 10;
     private int animalCount = 0;
     private int aquaticCount = 0;
@@ -13,7 +16,17 @@ public class Zoo {
     public Zoo(String name, String city) {
         setName(name); 
         this.city = city;
-        this.animals = new Animal[NBR_CAGES];
+        this.nbrCages = 25; // Valeur par défaut
+        this.animals = new Animal[nbrCages];
+        this.aquaticAnimals = new Aquatic[NBR_AQUATIC_CAGES];
+    }
+    
+    // Constructeur avec nombre de cages personnalisé (pour les tests)
+    public Zoo(String name, String city, int nbrCages) {
+        setName(name); 
+        this.city = city;
+        this.nbrCages = nbrCages;
+        this.animals = new Animal[nbrCages];
         this.aquaticAnimals = new Aquatic[NBR_AQUATIC_CAGES];
     }
     
@@ -30,7 +43,7 @@ public class Zoo {
     }
 
     public int getNbrCages() {
-        return NBR_CAGES;
+        return nbrCages;
     }
 
     public int getAnimalCount() {
@@ -53,24 +66,31 @@ public class Zoo {
     public void displayZoo() {
         System.out.println("Zoo name: " + name);
         System.out.println("City: " + city);
-        System.out.println("Number of cages: " + NBR_CAGES);
+        System.out.println("Number of cages: " + nbrCages);
     }
 
-    public boolean addAnimal(Animal animal) {
-        if (isZooFull()) {
-            System.out.println("Cannot add " + animal.getName() + ": Zoo is full!");
-            return false;
+    // INSTRUCTION 32-34: Méthode modifiée avec gestion d'exceptions
+    public void addAnimal(Animal animal) throws ZooFullException, InvalidAgeException {
+        // INSTRUCTION 34: Vérification de l'âge
+        if (animal.getAge() < 0) {
+            throw new InvalidAgeException("Âge d'animal invalide : l'âge ne peut pas être négatif.");
         }
         
+        // INSTRUCTION 33: Vérification si le zoo est plein
+        if (animalCount >= nbrCages) {
+            throw new ZooFullException("Le zoo est plein, impossible d'ajouter un nouvel animal.");
+        }
+        
+        // Vérification de doublon (conservée)
         if (searchAnimal(animal) != -1) {
             System.out.println("Cannot add " + animal.getName() + ": Animal already exists in the zoo!");
-            return false;
+            return;
         }
         
+        // INSTRUCTION 32: Ajout simple sans retour de valeur
         animals[animalCount] = animal;
         animalCount++;
         System.out.println(animal.getName() + " has been added successfully!");
-        return true;
     }
     
     // INSTRUCTION 25: Ajouter un animal aquatique
@@ -134,7 +154,7 @@ public class Zoo {
                 System.out.println((i + 1) + ". " + animals[i]);
             }
         }
-        System.out.println("Total animals: " + animalCount + "/" + NBR_CAGES);
+        System.out.println("Total animals: " + animalCount + "/" + nbrCages);
     }
     
     public void displayAquaticAnimals() {
@@ -178,7 +198,7 @@ public class Zoo {
     }
     
     public boolean isZooFull() {
-        return animalCount >= NBR_CAGES;
+        return animalCount >= nbrCages;
     }
     
     public static Zoo comparerZoo(Zoo z1, Zoo z2) {
@@ -191,6 +211,6 @@ public class Zoo {
 
     @Override
     public String toString() {
-        return "The Zoo's name is " + name + ", it's in " + city + " city, it has " + NBR_CAGES + " cages";
+        return "The Zoo's name is " + name + ", it's in " + city + " city, it has " + nbrCages + " cages";
     }
 }
