@@ -49,9 +49,7 @@ public class ProductManagement implements Management {
 
     @Override
     public List<Product> sortProductsById(List<Product> products, Comparator<Product> com) {
-        return products.stream()
-                .sorted(com)
-                .collect(Collectors.toList());
+        return products.stream().sorted(com).collect(Collectors.toList());
     }
 
     @Override
